@@ -1,0 +1,49 @@
+name: Scheduled analytics jobs
+
+# Free scheduler for AiSalesForesight's background jobs, using GitHub
+# Actions instead of Render Cron. GitHub Actions gives every account 2,000
+# free minutes/month on private repos (unlimited on public repos) — each
+# job below runs in a few seconds, so this stays free indefinitely at any
+# realistic scale for an early-stage product.
+#
+# Required repo secret: ML_SERVICE_URL, INTERNAL_JOBS_SECRET
+# (Settings -> Secrets and variables -> Actions -> New repository secret —
+# INTERNAL_JOBS_SECRET must match the FastAPI service's own env var)
+
+on:
+  schedule:
+    # Daily jobs: 02:00 UTC — inventory risk scoring + forecast refresh
+    - cron: "0 2 * * *"
+    # Weekly jobs: 03:00 UTC every Monday — trend/promo/elasticity/etc.
+    - cron: "0 3 * * 1"
+    # Weekly digest email: 04:00 UTC every Sunday
+    - cron: "0 4 * * 0"
+  workflow_dispatch: {} # lets you trigger any of these manually from the Actions tab
+
+jobs:
+  daily:
+    if: github.event.schedule == '0 2 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run daily jobs (inventory risk + forecast)
+        run: |
+          curl -sf -X POST "${{ secrets.ML_SERVICE_URL }}/internal/run-daily-jobs" \
+            -H "X-Internal-Secret: ${{ secrets.INTERNAL_JOBS_SECRET }}"
+
+  weekly:
+    if: github.event.schedule == '0 3 * * 1' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run weekly analytics jobs
+        run: |
+          curl -sf -X POST "${{ secrets.ML_SERVICE_URL }}/internal/run-weekly-jobs" \
+            -H "X-Internal-Secret: ${{ secrets.INTERNAL_JOBS_SECRET }}"
+
+  weekly-digest:
+    if: github.event.schedule == '0 4 * * 0' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly digest emails
+        run: |
+          curl -sf -X POST "${{ secrets.ML_SERVICE_URL }}/internal/run-weekly-digest" \
+            -H "X-Internal-Secret: ${{ secrets.INTERNAL_JOBS_SECRET }}"

@@ -1,0 +1,18 @@
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=service-role-key-here
+SUPABASE_JWT_SECRET=jwt-secret-from-supabase-settings
+ANTHROPIC_API_KEY=sk-ant-...
+INNGEST_EVENT_KEY=...
+
+# Optional — WhatsApp alerts (not free at production scale, see FREE_DEPLOY.md)
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_WHATSAPP_FROM=
+
+# Optional — weekly digest email (Resend has a real free tier)
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=alerts@aisalesforesight.com
+
+# Required for GitHub Actions to trigger scheduled jobs — generate a long
+# random string, put the same value in the GitHub repo secret of the same name
+INTERNAL_JOBS_SECRET=

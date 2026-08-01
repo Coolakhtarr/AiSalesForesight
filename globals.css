@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  border-color: theme("colors.line");
+}
+
+:focus-visible {
+  outline: 2px solid theme("colors.signal.teal");
+  outline-offset: 2px;
+}
+
+::selection {
+  background: theme("colors.signal.teal");
+  color: theme("colors.ink");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Thin scrollbars to match the panel-dense layout */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: theme("colors.line"); border-radius: 8px; }
